@@ -26,7 +26,9 @@ you realize that the chance of red or black are both slightly less than 1/2. The
 Let's make a quick sampling model for this simple version of roulette. You are going to bet a dollar each time you play and always bet on black. Make a box model for this process using the `sample` function. Write a function `get_outcome` that takes as an argument the number of times you play $N$ and returns your earnings $S_N$.
 
 ```{r}
-##Your code here
+arguments <- 10
+X <- sample( c(-1,1), arguments, replace = TRUE, prob=c(10/19, 9/19))
+sum(X)
 ```
 
 ## Problem 1B
@@ -34,7 +36,16 @@ Let's make a quick sampling model for this simple version of roulette. You are g
 Use Monte Carlo simulation to study the distribution of total earnings $S_N$ for $N=10,25,100,1000$. That is, study the distribution of earnings for different number of plays. What are the distributions of these two random variables? How do the expected values and standard errors change with $N$? Then do the same thing for the average winnings $S_N/N$. What result that you learned in class predicts this?
 
 ```{r}
-##Your code here
+N<-list(10,25,100,1000)
+for(loop in N){
+  B <- 10^4
+dist <- replicate(B,{
+  X <- sample( c(-1,35), loop, replace = TRUE, prob=c(37/38, 1/38))
+  mean(X)
+})
+hist(dist)
+}
+
 ```
 
 Your answer here.
