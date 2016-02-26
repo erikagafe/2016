@@ -26,9 +26,17 @@ you realize that the chance of red or black are both slightly less than 1/2. The
 Let's make a quick sampling model for this simple version of roulette. You are going to bet a dollar each time you play and always bet on black. Make a box model for this process using the `sample` function. Write a function `get_outcome` that takes as an argument the number of times you play $N$ and returns your earnings $S_N$.
 
 ```{r}
-N <- 10
-X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
-sum(X)
+get_outcome <- function(N){
+   X<-sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+   
+   return (sum(X==1))
+}
+
+N<-list(10,25,100)
+for(loop in N){
+  cat(" I bet $", loop ,"and I won $", get_outcome(loop), ". ")
+}
+
 ```
 
 ## Problem 1B
@@ -42,8 +50,9 @@ for(loop in N){
   B <- 10^4
 dist <- replicate(B,{
   X <- sample( c(-1,1), loop, replace = TRUE, prob=c(10/19, 9/19))
-  mean(X)
+  p_hat<-mean(X)
 })
+
 hist(dist)
 }
 ```
@@ -90,6 +99,7 @@ B <- 10^4
 error <- replicate(B,{X <- sample(c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
   p_hat<-mean(X==1)
 })
+p_hat
 hist(error)
 
 qqnorm(error)
@@ -104,7 +114,16 @@ qqline(error)
 In general, what is the probability that the casino loses money as a function of $N$? Make a plot for values ranging from 25 to 1,000. Why does the casino give you free drinks if you keep playing?
 
 ```{r}
-##Your code here
+new<-c('N', 'Mean')
+new
+N<-1000
+  B <- 10^4
+dist <- replicate(B,{
+  X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+})
+hist(dist)
+
+new
 ```
 
 Your answer here. 
@@ -118,7 +137,10 @@ You run a bank that has a history of identifying potential homeowners that can b
 Your bank gives out 1,000 loans this year. Create a sampling model and use the function `sample` to simulate the number of foreclosure in a year with the information that 2% of customers default. Also suppose your bank loses $120,000 on each foreclosure. Run the simulation for one year and report your loss.
 
 ```{r}
-##your code here
+bank<-sample( c(1,-1), 1000, replace = TRUE, prob=c(.80, .20))
+sum(bank==-1)
+losses <- sum(bank==-1)*120000
+print(losses)
 ```
 
 ## Problem 2B
