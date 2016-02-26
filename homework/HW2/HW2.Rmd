@@ -26,8 +26,8 @@ you realize that the chance of red or black are both slightly less than 1/2. The
 Let's make a quick sampling model for this simple version of roulette. You are going to bet a dollar each time you play and always bet on black. Make a box model for this process using the `sample` function. Write a function `get_outcome` that takes as an argument the number of times you play $N$ and returns your earnings $S_N$.
 
 ```{r}
-arguments <- 10
-X <- sample( c(-1,1), arguments, replace = TRUE, prob=c(10/19, 9/19))
+N <- 10
+X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
 sum(X)
 ```
 
@@ -36,33 +36,65 @@ sum(X)
 Use Monte Carlo simulation to study the distribution of total earnings $S_N$ for $N=10,25,100,1000$. That is, study the distribution of earnings for different number of plays. What are the distributions of these two random variables? How do the expected values and standard errors change with $N$? Then do the same thing for the average winnings $S_N/N$. What result that you learned in class predicts this?
 
 ```{r}
+
 N<-list(10,25,100,1000)
 for(loop in N){
   B <- 10^4
 dist <- replicate(B,{
-  X <- sample( c(-1,35), loop, replace = TRUE, prob=c(37/38, 1/38))
+  X <- sample( c(-1,1), loop, replace = TRUE, prob=c(10/19, 9/19))
   mean(X)
 })
 hist(dist)
 }
+```
+
+
+```{r}
+N<-10
+X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+p_hat <- mean(X==1)
+cat("N is", N, "Our estimate of the percent of black is", p_hat, "plus or minus", round( sqrt(p_hat*(1-p_hat)/N), 4))
+
+N<-25
+X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+p_hat <- mean(X==1)
+cat("N is", N, "Our estimate of the percent of black is", p_hat, "plus or minus", round( sqrt(p_hat*(1-p_hat)/N), 4))
+
+N<-100
+X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+p_hat <- mean(X==1)
+cat("N is", N, "Our estimate of the percent of black is", p_hat, "plus or minus", round( sqrt(p_hat*(1-p_hat)/N), 4))
+
+N<-1000
+X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+p_hat <- mean(X==1)
+cat("N is", N, "Our estimate of the percent of black is", p_hat, "plus or minus", round( sqrt(p_hat*(1-p_hat)/N), 4))
 
 ```
 
-Your answer here.
 
 
 ## Problem 1C
 
 What is the expected value of our sampling model? What is the standard deviation of our sampling model?
 
-Your answer here.
+The expected value changes depeding the N. However the Standard deviation becomes smaller everytime that N increases.
 
 ## Problem 1D
 
 Use CLT to approximate the probability that the casino loses money when you play 25 times. Then use a Monte Carlo simulation to confirm.
 
 ```{r}
-##Your code here
+N<-25
+B <- 10^4
+error <- replicate(B,{X <- sample(c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
+  p_hat<-mean(X==1)
+})
+hist(error)
+
+qqnorm(error)
+qqline(error)
+
 ```
 
 
