@@ -46,7 +46,7 @@ Use Monte Carlo simulation to study the distribution of total earnings $S_N$ for
 N<-list(10,25,100,1000)
 sigma <- 2*sqrt(9/19*10/19) 
 for(loop in N){
-  B <- 10^4
+  B <- 10^5
   dist <- replicate(B,{
   X <- sample( c(-1,1), loop, replace = TRUE, prob=c(10/19, 9/19))
   sum(X)
@@ -64,7 +64,7 @@ N<-list(10,25,100,1000)
 mu <- -1/19
 sigma <- 2*sqrt(9/19*10/19) 
 for(loop in N){
-  B <- 10^4
+  B <- 10^5
   error <- replicate(B,{
   X <- sample( c(-1,1), loop, replace = TRUE, prob=c(10/19, 9/19))
   mean(X)-mu
@@ -91,7 +91,7 @@ mu <- -1/19
 sigma <- 2*sqrt(9/19*10/19) 
 1-pnorm(sqrt(N)* mu/sigma )
 
-B <- 10^4
+B <- 10^5
 c_loses<- replicate(B,{
   X <- sample( c(-1,1), N, replace = TRUE, prob=c(10/19, 9/19))
   mean(X)
@@ -136,10 +136,10 @@ print(losses)
 Note that the loss you will incur is a random variable. Use Monte Carlo simulation to estimate the distribution of this random variable. Use summaries and visualization to describe your potential losses to your board of trustees.
 
 ```{r}
-B <- 10^6
+B <- 10^5
 plosses <- replicate(B,{
 bank<-sample( c(1,-1), 1000, replace = TRUE, prob=c(.98, .02))
-sum(bank==-1)*120^3
+sum(bank==-1)*120000
 })
 hist(plosses)
 ```
@@ -155,7 +155,7 @@ loan <- 180000
 loss_per_foreclosure <- 120000
 p_hat <- 0.98
 interest_rate2 <- 0.0142
-B <- 10^3
+B <- 10^5
 simulation_interest <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
@@ -176,7 +176,7 @@ p_hat <- 0.98
 interest_rate2 <- 0.0142
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
-B <- 10^4
+B <- 10^5
 error <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
@@ -228,7 +228,7 @@ p_hat <- 0.96
 interest_rate2 <- 0.023
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
-B <- 10^3
+B <- 10^5
 error <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
@@ -252,6 +252,24 @@ We were able to set an interest rate of about 2% that guaranteed a very low prob
 The pool of borrowers they found had a much higher default rate, estimated to be $p=0.05$. What interest rate would give these companies the same expected profit as your bank (Answer to 2E)? 
 
 ```{r}
+## Code in 2E. It shows the profit.
+N<-1000
+loan <- 180000
+loss_per_foreclosure <- 120000
+p_hat <- 0.98
+interest_rate2 <- 0.023
+sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
+mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
+B <- 10^5
+profit <- replicate(B,{
+  X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
+             replace=TRUE, prob=c((1-p_hat), p_hat))
+  mean(X)
+})
+mean(profit)
+
+
+## Code for Question 3A
 N<-1000
 loan <- 180000
 loss_per_foreclosure <- 120000
@@ -259,16 +277,15 @@ p_hat <- 0.95
 interest_rate2 <- 0.045
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
-B <- 10^3
+B <- 10^5
 error <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
-  mean(X)-mu
+  mean(X)
 })
 
 mean(error)                
-mean(error< -mu)
-pnorm( -sqrt(N)*mu/sigma )
+
 
 
 ```
@@ -286,7 +303,7 @@ p_hat <- 0.95
 interest_rate2 <- 0.045
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
-B <- 10^4
+B <- 10^5
 error <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
@@ -311,7 +328,7 @@ interest_rate2 <- 0.045
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
 N <- ceiling( -qnorm(1-10^-3)*sigma/mu )^2
-B <- 10^4
+B <- 10^5
 error <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
@@ -369,7 +386,17 @@ Generate a simulation with correlated outcomes such as those above. This time us
 
 
 ```{r}
-###your code here
+loan <- 180000
+loss_per_foreclosure <- 120000
+p2 <- 0.05
+interest_rate2 <- 0.045
+B <- 10^5
+outcomes2 <- replicate(B,{
+  add <- sample( c(-0.04,0.04), 1)
+  sample( c(-loss_per_foreclosure, interest_rate2*loan ), 2, replace=TRUE, prob=c(p2+add, 1-(p2+add)))
+})
+sum( outcomes2[1,] < 0 & outcomes2[2,]<0)/sum(outcomes2[1,]<0)
+
 ```
 
 
