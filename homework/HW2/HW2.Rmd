@@ -42,6 +42,7 @@ for(loop in N){
 Use Monte Carlo simulation to study the distribution of total earnings $S_N$ for $N=10,25,100,1000$. That is, study the distribution of earnings for different number of plays. What are the distributions of these two random variables? How do the expected values and standard errors change with $N$? Then do the same thing for the average winnings $S_N/N$. What result that you learned in class predicts this?
 
 ```{r}
+## Earnings
 N<-list(10,25,100,1000)
 sigma <- 2*sqrt(9/19*10/19) 
 for(loop in N){
@@ -58,15 +59,17 @@ print(sigma/sqrt(loop))
 
 
 ```{r}
+## Expected values and standard errors
 N<-list(10,25,100,1000)
+mu <- -1/19
 sigma <- 2*sqrt(9/19*10/19) 
 for(loop in N){
   B <- 10^4
-  dav <- replicate(B,{
+  error <- replicate(B,{
   X <- sample( c(-1,1), loop, replace = TRUE, prob=c(10/19, 9/19))
-  mean(X)
+  mean(X)-mu
 })
-hist(dav)
+hist(error)
 print(sigma/sqrt(loop))
 }
 ```
@@ -111,7 +114,7 @@ dist<-pnorm(sqrt(N)* mu/sigma )
 plot(dist)                
 ```
 
-The casino givesfree drinks if you keep playing because the porbability that the casino loses money drops as you increa your number of games. 
+The casino gives free drinks if you keep playing because the probability that the casino loses money drops as you increase the number of games. 
 
 # Problem 2 
 
@@ -179,9 +182,6 @@ error <- replicate(B,{
              replace=TRUE, prob=c((1-p_hat), p_hat))
   mean(X)-mu
 })
-sqrt( mean( error^2))
-sigma/sqrt(N)
-
 pnorm(-sqrt(N)*mu/sigma )
 mean(error< 0)   
 
@@ -203,16 +203,12 @@ p_hat <- 0.98
 interest_rate2 <- 0.023
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
-B <- 10^3
+B <- 10^5
 error <- replicate(B,{
   X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
              replace=TRUE, prob=c((1-p_hat), p_hat))
   mean(X)-mu
 })
-
-mean(error)                
-sqrt( mean( error^2))
-sigma/sqrt(N)
 mean(error< -mu)
 pnorm( -sqrt(N)*mu/sigma )
 
@@ -225,15 +221,27 @@ Hint: See if the disparity is smaller for larger values of $p$. Also check for p
 
 
 ```{r}
-
-##try making 2% bigger
-##as in, 2% chance of default, 4%, 6%, and so on
-
-##your code here
+N<-1000
+loan <- 180000
+loss_per_foreclosure <- 120000
+p_hat <- 0.96
+interest_rate2 <- 0.023
+sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
+mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
+B <- 10^3
+error <- replicate(B,{
+  X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
+             replace=TRUE, prob=c((1-p_hat), p_hat))
+  mean(X)-mu
+})
+mean(error< -mu)
+pnorm( -sqrt(N)*mu/sigma )
 ```
 
+The disparity is smaller when p gets bigger in our case (1-P_hat). The disparity also decreases a little bit when I increased the times that the simulation is going to run. The main reason is given that the tails are harder to predict. The bigger the probability there is more chances of happening. 
+Even though CLT and Monte Carlo are approximation, Monte Carlo simulation should be run infinity times to be as close as the true mean.  
 
-Your answer here.
+
 
 ## Problem 3
 
@@ -248,7 +256,7 @@ N<-1000
 loan <- 180000
 loss_per_foreclosure <- 120000
 p_hat <- 0.95
-interest_rate2 <- 0.051
+interest_rate2 <- 0.045
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
 B <- 10^3
@@ -259,9 +267,7 @@ error <- replicate(B,{
 })
 
 mean(error)                
-sqrt( mean( error^2))
-sigma/sqrt(N)
-mean(error> -mu)
+mean(error< -mu)
 pnorm( -sqrt(N)*mu/sigma )
 
 
@@ -277,7 +283,7 @@ N<-1000
 loan <- 180000
 loss_per_foreclosure <- 120000
 p_hat <- 0.95
-interest_rate2 <- 0.051
+interest_rate2 <- 0.045
 sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
 mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
 B <- 10^4
@@ -287,11 +293,8 @@ error <- replicate(B,{
   mean(X)-mu
 })
 mean(error)                
-sqrt( mean( error^2))
-sigma/sqrt(N)
 mean(error < 0)
 1-pnorm(sqrt(N)/sigma)
-
 ```
 
 ## Problem 3C 
@@ -300,7 +303,23 @@ Note that the probability is much higher now. This is because the standard devia
 
 Your answer here.
 ```{r}
-###your code here
+
+loan <- 180000
+loss_per_foreclosure <- 120000
+p_hat <- 0.95
+interest_rate2 <- 0.045
+sigma<-(abs(loan*interest_rate2)-(-loss_per_foreclosure))*sqrt(p_hat*(1-p_hat))
+mu<-(loan*p_hat*interest_rate2)-(loss_per_foreclosure*(1-p_hat))
+N <- ceiling( -qnorm(1-10^-3)*sigma/mu )^2
+B <- 10^4
+error <- replicate(B,{
+  X<-sample( c(-loss_per_foreclosure, interest_rate2*loan ), N,
+             replace=TRUE, prob=c((1-p_hat), p_hat))
+  mean(X)-mu
+})
+mean(error< -mu)
+pnorm( -sqrt(N)*mu/sigma )
+
 ```
 
 So by doubling the number of loans we were able to reduce our risk! Now, for this to work, all the assumptions in our model need to be approximately correct, including the assumption that the probability of default was **independent**. This turned out to be false and the main reason for the under estimation of risk.
@@ -357,3 +376,7 @@ Generate a simulation with correlated outcomes such as those above. This time us
 ## Problem 4
 
 Read [this wikipedia page](https://en.wikipedia.org/wiki/Financial_crisis_of_2007%E2%80%9308) about the financial crisis. Write a paragraph describing how what you learned in this homework can help explain the conditions that led to the crisis.
+
+This homework taught me that one of the reason the financial crisis 2007-08 happened was due to the banks sampling models for loans.  1997-98 was the construction boom that led to facilitate loans. The housing industry was growing until 2004. Banks and financial institution made their sample models assuming that the economy and the market would remain the same.  People will continue applying for loans (p) and the foreclosure percentage would continue as expected (1-p). Unfortunately, prices started to fall, which resulted homes worth less than the mortgage, providing enough incentive to consumers to foreclose the loans. The ongoing foreclosing tendency continues and destroys consumers and banking institutions. 
+Banking institution ease loans assuming that X percentage (p) of that population will foreclose, but the rest (1-p) will pay their mortgage. The banks sampling models for loans did not take in consideration a negative change on the market.  The market was so profitable that they started giving more loans (by increasing N) at very low rates. The moment the market starts to fall the percentage of foreclose consumer’s increases, banks start making negative profits and the banking institution crashes.
+
